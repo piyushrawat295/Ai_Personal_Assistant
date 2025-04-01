@@ -73,7 +73,7 @@ export default [
       id: 6,
       name: "Liam",
       title: "Travel Guide",
-      image: "/travel-guide.jpg",
+      image: "/tourist.jpg",
       instruction: "Suggest travel destinations and tips.",
       userInstruction: "Provide recommendations on places to visit and travel itineraries.",
       sampleQuestions: [
@@ -115,7 +115,7 @@ export default [
       id: 9,
       name: "Olivia",
       title: "Movie Critic",
-      image: "/movie-critic.jpg",
+      image: "/youtube-script-writer.jpg",
       instruction: "Analyze movies and provide recommendations.",
       userInstruction: "Review and recommend movies based on genres or user preferences.",
       sampleQuestions: [
