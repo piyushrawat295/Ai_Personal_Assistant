@@ -12,10 +12,9 @@ import { useConvex, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AuthContext } from "@/context/AuthContext";
 import { Loader2Icon } from "lucide-react";
-import { GetAllUseAssistants } from "@/convex/userAiAssistants";
 import { useRouter } from "next/navigation";
 
-type ASSISTANT = {
+export type ASSISTANT = {
   id: number;
   name: string;
   title: string;
