@@ -1,14 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AIassistantsList from "@/services/AIassistantsList";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { TypingAnimation } from "@/components/magicui/typing-animation";
 import { SparklesText } from "@/components/magicui/sparkles-text";
-import { RainbowButton } from "@/components/magicui/rainbow-button";
+import { Button } from "@/components/ui/button";
+import { useConvex, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { AuthContext } from "@/context/AuthContext";
+import { Loader2Icon } from "lucide-react";
+import { GetAllUseAssistants } from "@/convex/userAiAssistants";
+import { useRouter } from "next/navigation";
+
 type ASSISTANT = {
   id: number;
   name: string;
@@ -21,7 +27,22 @@ type ASSISTANT = {
 
 function AIassistants() {
   const [selectedAssistant, setSelectedAssistant] = useState<ASSISTANT[]>([]);
-
+  const {user} = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const convex = useConvex();
+  const router = useRouter();
+  useEffect(()=>{
+    user&&GetUserAssistants();
+  },[user])
+  const GetUserAssistants=async()=>{
+    const result = await convex.query(api.userAiAssistants.GetAllUseAssistants,{uid:user._id});
+    console.log(result)
+    if(result.length > 0){
+      router.replace('/workspace')
+      return;
+    }
+  }
+  const insertAssistant = useMutation(api.userAiAssistants.InsertSelectedAssistants)
   const onSelect = (assistant: ASSISTANT) => {
     setSelectedAssistant((prev) =>
       prev.some((item) => item.id === assistant.id)
@@ -33,6 +54,16 @@ function AIassistants() {
   const isAssistantSelected = (assistant: ASSISTANT) => {
     return selectedAssistant.some((item) => item.id === assistant.id);
   };
+
+  const OnClickContinue=async()=>{
+    setLoading(true);
+    const result = await insertAssistant({
+      records: selectedAssistant,
+      uid:user?._id
+    })
+    setLoading(false);
+    console.log(result);
+  }
 
   return (
     <div className="px-10 mt-20 md:px-28 lg:px-36 xl:px-48">
@@ -46,7 +77,8 @@ function AIassistants() {
             Choose your AI companion 🚀
           </TypingAnimation>
         </div>
-        <RainbowButton>Continue</RainbowButton>
+        <Button onClick={OnClickContinue} disabled={selectedAssistant?.length==0 || loading}>{loading&&<Loader2Icon className="animate-spin"/>}Continue</Button>
+
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mt-5">
         {AIassistantsList.map((assistant, index) => (
