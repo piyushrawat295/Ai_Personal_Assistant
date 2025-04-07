@@ -4,8 +4,9 @@ import { ASSISTANT } from "@/app/(main)/ai_assistants/page";
 
 type AssistantContextType = {
   assistant: ASSISTANT | null;
-  setAssistant: (assistant: ASSISTANT | null) => void;
+  setAssistant: React.Dispatch<React.SetStateAction<ASSISTANT | null>>;
 };
+
 
 export const AssistantContext = createContext<AssistantContextType | undefined>(undefined);
 
