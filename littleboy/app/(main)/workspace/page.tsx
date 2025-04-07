@@ -1,6 +1,6 @@
 import React from 'react'
 import AssistantList from './_components/AssistantList'
-
+import AssistantSettings from './_components/AssistantSettings'
 function workspace() {
   return (
     <div className='h-screen fixed w-full'>
@@ -13,7 +13,7 @@ function workspace() {
                 {/* ChatUI */}
             </div>
             <div className='hidden lg:block'>
-                Setting
+                <AssistantSettings/>
                 {/* Settings */}
             </div>
         </div>

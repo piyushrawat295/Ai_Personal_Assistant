@@ -11,6 +11,7 @@ export const InsertSelectedAssistants = mutation({
             args.records.map((record:any) =>
                 ctx.db.insert("userAiAssistants", {
                     ...record,
+                    aiModelId:"Google: Gemini 2.0 Flash",
                     uid: args.uid,
                 })
             )
