@@ -48,3 +48,12 @@ export const UpdateUserAiAssistant = mutation({
     }
   });
   
+  export const DeleteAssistant = mutation ({
+    args: {
+      id: v.id('userAiAssistants')
+    },
+    handler: async (convexToJson, args) =>{
+      await convexToJson.db.delete(args.id);
+    }
+  })
+

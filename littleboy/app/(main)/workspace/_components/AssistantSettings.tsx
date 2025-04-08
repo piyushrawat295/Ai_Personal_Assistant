@@ -15,57 +15,76 @@ import { Button } from "@/components/ui/button";
 import { Loader2Icon, Save, Trash } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
+import ConfirmationAlert from "../ConfirmationAlert";
+import { BlurFade } from "@/components/magicui/blur-fade";
 
 function AssistantSettings() {
   const { assistant, setAssistant } = useAssistant();
-  const UpdateAssistant = useMutation(api.userAiAssistants.UpdateUserAiAssistant);
-  const[loading,setLoading] = useState(false);
+  const UpdateAssistant = useMutation(
+    api.userAiAssistants.UpdateUserAiAssistant
+  );
+  const DeleteAssistant = useMutation(api.userAiAssistants.DeleteAssistant);
+  const [loading, setLoading] = useState(false);
   const onHandleInputChange = (field: string, value: string) => {
     setAssistant((prev: any) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
   const OnSave = async () => {
-    if (!assistant?._id || !assistant?.aiModelId || !assistant?.userInstruction) return;
-  
+    if (!assistant?._id || !assistant?.aiModelId || !assistant?.userInstruction)
+      return;
+
     setLoading(true);
     await UpdateAssistant({
       id: assistant?._id,
       aiModelId: assistant.aiModelId,
       userInstruction: assistant.userInstruction,
     });
+    toast("Saved!");
     setLoading(false);
   };
-  
 
-  
+  const onDelete = async () => {
+    if (!assistant?._id) return; // early exit if _id is undefined
+    console.log("Delete");
+    setLoading(true);
+    await DeleteAssistant({
+      id: assistant._id,
+    });
+    setAssistant(null);
+    setLoading(false);
+  };
+
   return (
     assistant && (
       <div className="p-5 bg-secondary border-l-[1px] h-screen">
         <h2 className="font-bold text-xl">Settings</h2>
-        <div className="mt-4 flex gap-3">
-          <Image
-            src={assistant?.image}
-            alt="assistant"
-            width={100}
-            height={100}
-            className="rounded-xl h-[80px] w-[90px]"
-          />
-          <div>
-            <h2 className="font-bold">{assistant?.name}</h2>
-            <p className="text-gray-700 dark:text-gray-300">
-              {assistant?.title}
-            </p>
+        <BlurFade delay={0.25}>
+          <div className="mt-4 flex gap-3">
+            <Image
+              src={assistant?.image}
+              alt="assistant"
+              width={100}
+              height={100}
+              className="rounded-xl h-[80px] w-[90px]"
+            />
+            <div>
+              <h2 className="font-bold">{assistant?.name}</h2>
+              <p className="text-gray-700 dark:text-gray-300">
+                {assistant?.title}
+              </p>
+            </div>
           </div>
-        </div>
+        </BlurFade>
+        <BlurFade delay={0.25*2}>
         <div className="mt-4 text-gray-500">
           <h2>Model:</h2>
           <Select
-  defaultValue={assistant.aiModelId}
-  onValueChange={(value) => onHandleInputChange("aiModelId", value)}
->
-
+            defaultValue={assistant.aiModelId}
+            onValueChange={(value) => onHandleInputChange("aiModelId", value)}
+          >
             <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder="Select Model" />
             </SelectTrigger>
@@ -87,20 +106,39 @@ function AssistantSettings() {
             </SelectContent>
           </Select>
         </div>
-
+        </BlurFade>
+        <BlurFade delay={0.25*3}>  
         <div className="mt-4">
           <h2 className="text-gray-500">Instruction:</h2>
           <Textarea
-  placeholder="Add Instruction"
-  className="h-[180px] bg-white"
-  value={assistant?.userInstruction}
-  onChange={(e) => onHandleInputChange("userInstruction", e.target.value)}
-/>
-
+            placeholder="Add Instruction"
+            className="h-[180px] bg-white"
+            value={assistant?.userInstruction}
+            onChange={(e) =>
+              onHandleInputChange("userInstruction", e.target.value)
+            }
+          />
         </div>
+        </BlurFade>
         <div className="absolute bottom-10 right-5 flex gap-5">
-            <Button disabled={loading} variant="ghost"><Trash/>Delete</Button>
-            <Button className="cursor-pointer"onClick={OnSave} disabled={loading}>{loading?<Loader2Icon className="animate-spin"/>:<Save/>}  Save</Button>
+          <ConfirmationAlert onDelete={onDelete}>
+            <Button
+              className="cursor-pointer"
+              disabled={loading}
+              variant="ghost"
+            >
+              <Trash />
+              Delete
+            </Button>
+          </ConfirmationAlert>
+
+          <Button
+            className="cursor-pointer"
+            onClick={OnSave}
+            disabled={loading}
+          >
+            {loading ? <Loader2Icon className="animate-spin" /> : <Save />} Save
+          </Button>
         </div>
       </div>
     )

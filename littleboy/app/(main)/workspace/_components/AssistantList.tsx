@@ -8,6 +8,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { ASSISTANT } from "../../ai_assistants/page";
 import { useAssistant } from "@/context/AssistantContext";
+import { BlurFade } from "@/components/magicui/blur-fade";
 
 function AssistantList() {
   const convex = useConvex();
@@ -17,7 +18,7 @@ function AssistantList() {
 
   useEffect(() => {
     if (user) fetchUserAssistants();
-  }, [user]);
+  }, [user && assistant==null]);
 
   const fetchUserAssistants = async () => {
     try {
@@ -38,6 +39,7 @@ function AssistantList() {
       <Input className="bg-white mt-3" placeholder="Search" />
       <div className="mt-5">
         {assistantList.map((assistant_, index) => (
+          <BlurFade key={assistant_.image} delay={0.25 + index * 0.05} inView>
           <div
             key={index}
             onClick={() => setAssistant(assistant_)}
@@ -57,6 +59,7 @@ function AssistantList() {
               </h2>
             </div>
           </div>
+          </BlurFade>
         ))}
       </div>
       <div className="absolute bottom-10 flex gap-3 items-center hover:bg-gray-200 w-[90%] p-2 rounded-xl cursor-pointer">
